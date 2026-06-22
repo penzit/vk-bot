@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>💼 Заявки на размещение вакансий</h3>
+<table class="table table-striped">
+    <thead><tr><th>ID</th><th>Пользователь</th><th>Компания</th><th>Описание</th><th>Контакты</th><th>Вакансия</th><th>Дата</th><th>Действия</th></tr></thead>
+    <tbody>
+    {% for e in emps %}
+    <tr>
+        <td>{{ e.id }}</td>
+        <td><a href="https://vk.com/id{{ e.user_id }}" target="_blank">{{ e.user_name }}</a></td>
+        <td>{{ e.company_name[:35] }}</td>
+        <td>{{ e.description[:50] }}{% if e.description|length > 50 %}…{% endif %}</td>
+        <td>{{ e.contacts[:30] }}</td>
+        <td>{{ e.vacancy_text[:50] }}{% if e.vacancy_text|length > 50 %}…{% endif %}</td>
+        <td>{{ e.created_at[:16] }}</td>
+        <td>
+            <form method="post" action="/employers/delete/{{ e.id }}" style="display:inline">
+                <button class="btn btn-danger btn-sm py-0">❌</button>
+            </form>
+        </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="8" class="text-muted">Нет заявок на вакансии</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

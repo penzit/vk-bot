@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>📝 Отзывы на магазины (модерация)</h3>
+<table class="table table-striped">
+    <thead><tr><th>ID</th><th>Тип</th><th>Магазин</th><th>Пользователь</th><th>Оценка</th><th>Текст</th><th>Статус</th><th>Дата</th><th>Действия</th></tr></thead>
+    <tbody>
+    {% for r in revs %}
+    <tr>
+        <td>{{ r.id }}</td>
+        <td>
+            {% if r.target_type == 'food' %}
+            <span class="badge bg-info">Еда</span>
+            {% else %}
+            <span class="badge bg-secondary">Магазин</span>
+            {% endif %}
+        </td>
+        <td><a href="/shops">#{{ r.target_id }} {{ (r.target_name or '')[:25] }}</a></td>
+        <td><a href="https://vk.com/id{{ r.user_id }}">{{ r.user_name or r.user_id }}</a></td>
+        <td>{{ r.rating }}⭐</td>
+        <td>{{ r.text[:80] }}{% if r.text|length > 80 %}…{% endif %}</td>
+        <td>
+            {% if r.status == 'pending' %}<span class="badge bg-warning text-dark">Ожидает</span>
+            {% elif r.status == 'approved' %}<span class="badge bg-success">✓</span>
+            {% else %}<span class="badge bg-secondary">✗</span>{% endif %}
+        </td>
+        <td>{{ r.created_at[:16] }}</td>
+        <td>
+            {% if r.status == 'pending' %}
+            <form method="post" action="/shop_reviews/approve/{{ r.id }}" style="display:inline">
+                <button class="btn btn-success btn-sm py-0">✅</button>
+            </form>
+            <form method="post" action="/shop_reviews/reject/{{ r.id }}" style="display:inline">
+                <button class="btn btn-danger btn-sm py-0">❌</button>
+            </form>
+            {% endif %}
+        </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="9" class="text-muted">Нет отзывов</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

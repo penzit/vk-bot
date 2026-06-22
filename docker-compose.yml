@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  bot:
+    build: .
+    container_name: vk-bot
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+      - ./.env:/app/.env:ro
+    restart: unless-stopped
+    environment:
+      - DATABASE_PATH=/app/data/bot.db

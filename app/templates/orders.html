@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>📋 Биржа заявок</h3>
+<div class="row mb-3">
+    <div class="col-md-3"><div class="card p-3 text-center"><h5>{{ stats.total }}</h5><small>Всего заявок</small></div></div>
+    <div class="col-md-3"><div class="card p-3 text-center"><h5>{{ stats.by_status.new if stats.by_status.new is defined else 0 }}</h5><small>Новые</small></div></div>
+    <div class="col-md-3"><div class="card p-3 text-center"><h5>{{ stats.by_status.in_progress if stats.by_status.in_progress is defined else 0 }}</h5><small>В работе</small></div></div>
+    <div class="col-md-3"><div class="card p-3 text-center"><h5>{{ stats.by_status.completed if stats.by_status.completed is defined else 0 }}</h5><small>Выполнено</small></div></div>
+</div>
+<div class="d-flex mb-3 gap-2 flex-wrap">
+    <a href="/orders" class="btn btn-outline-primary btn-sm">Все</a>
+    {% for c in cats %}
+    <a href="/orders?category_id={{ c.id }}" class="btn btn-sm {% if selected_cat == c.id %}btn-primary{% else %}btn-outline-secondary{% endif %}">{{ c.name }}</a>
+    {% endfor %}
+    <form method="post" action="/orders/expire" style="margin-left:auto" onsubmit="return confirm('Прострочить старые заявки?')">
+        <button class="btn btn-warning btn-sm">⏰ Прострочить</button>
+    </form>
+</div>
+<table class="table table-sm table-hover">
+<thead><tr><th>#</th><th>Категория</th><th>Описание</th><th>Срочность</th><th>Статус</th><th>Откл.</th><th>Дата</th><th></th></tr></thead>
+<tbody>
+{% for o in orders %}
+<tr>
+    <td>{{ o.id }}</td>
+    <td>{{ o.category }}</td>
+    <td>{{ o.description[:60] }}</td>
+    <td>{{ o.urgency }}</td>
+    <td><span class="badge bg-{% if o.status == 'new' %}primary{% elif o.status == 'has_responses' %}warning{% elif o.status == 'in_progress' %}info{% elif o.status == 'completed' %}success{% elif o.status == 'cancelled' %}danger{% else %}secondary{% endif %}">{{ o.status }}</span></td>
+    <td>{{ o.responses_count }}</td>
+    <td>{{ o.created_at }}</td>
+    <td>
+        <form method="post" action="/orders/delete/{{ o.id }}" style="display:inline" onsubmit="return confirm('Удалить заявку?')">
+            <button class="btn btn-danger btn-sm">🗑</button>
+        </form>
+    </td>
+</tr>
+{% else %}
+<tr><td colspan="8" class="text-muted text-center">Нет заявок</td></tr>
+{% endfor %}
+</tbody>
+</table>
+{% if total_pages > 1 %}
+<nav><ul class="pagination pagination-sm">
+    {% for pg in page_list %}
+    <li class="page-item {% if pg == page %}active{% endif %}"><a class="page-link" href="/orders?page={{ pg }}{% if selected_cat %}&category_id={{ selected_cat }}{% endif %}">{{ pg }}</a></li>
+    {% endfor %}
+</ul></nav>
+{% endif %}
+{% endblock %}

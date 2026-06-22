@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>⚙️ Настройки подключения к VK</h3>
+
+<div class="row mt-3">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">🔑 API ключ и группа</h5>
+                <form method="post" action="/settings">
+                    <div class="mb-3">
+                        <label class="form-label">VK API Token (ключ доступа группы)</label>
+                        <input type="text" name="vk_token" class="form-control" value="{{ vk_token }}" required>
+                        <div class="form-text">Токен с правами управления сообществом (получить в настройках сообщества → Работа с API)</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">ID группы</label>
+                        <input type="text" name="group_id" class="form-control" value="{{ group_id }}" required>
+                        <div class="form-text">ID сообщества (число, например 93140581). Можно оставить пустым — определится автоматически.</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">💾 Сохранить настройки</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">🤖 Управление ботом</h5>
+                {% if bot_running %}
+                    <div class="alert alert-success">✅ Бот запущен и работает</div>
+                    <form method="post" action="/bot/stop" style="display:inline">
+                        <button type="submit" class="btn btn-danger">⏹ Остановить бота</button>
+                    </form>
+                {% else %}
+                    <div class="alert alert-secondary">⏸ Бот остановлен</div>
+                    <form method="post" action="/bot/start" style="display:inline">
+                        <button type="submit" class="btn btn-success">▶️ Запустить бота</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">🗑 Управление данными</h5>
+                <form method="post" action="/sessions/clear" onsubmit="return confirm('Очистить все сессии пользователей? Пользователям придётся заново выбирать раздел.')" class="mb-2">
+                    <button type="submit" class="btn btn-warning">🧹 Очистить сессии</button>
+                </form>
+                <form method="post" action="/settings/clear_db" onsubmit="return confirm('⚠️ ВНИМАНИЕ! Это удалит ВСЕ данные: мастеров, магазинов, отзывы, заявки, FAQ. Таблицы останутся. Настройки бота (токен, ID группы) сохранятся. Продолжить?')">
+                    <button type="submit" class="btn btn-danger">🔥 Очистить базу данных</button>
+                </form>
+                <div class="form-text">Удаляет все записи из таблиц (кроме настроек бота). Таблицы и структура сохраняются.</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

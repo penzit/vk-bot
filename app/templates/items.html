@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>{% if type == 'masters' %}🛠{% else %}🏪{% endif %} {{ title }}</h3>
+
+<button class="btn btn-primary btn-sm mb-2" data-bs-toggle="collapse" data-bs-target="#addForm">➕ Добавить</button>
+<button class="btn btn-outline-secondary btn-sm mb-2" data-bs-toggle="collapse" data-bs-target="#catForm">📁 Категории</button>
+
+<div class="collapse mb-3" id="catForm">
+    <div class="card card-body p-2">
+        <form method="post" action="/categories/add" class="row g-2 align-items-center">
+            <input type="hidden" name="table" value="{{ cat_type }}">
+            <div class="col-auto"><input type="text" name="name" class="form-control form-control-sm" placeholder="Новая категория" required></div>
+            <div class="col-auto"><button type="submit" class="btn btn-success btn-sm">➕</button></div>
+        </form>
+        {% for c in categories %}
+        {% if c.id is not none %}
+        <form method="post" action="/categories/delete" class="d-inline">
+            <input type="hidden" name="table" value="{{ cat_type }}">
+            <input type="hidden" name="cat_id" value="{{ c.id }}">
+            <span class="badge bg-info me-1">{{ c.name }} <button type="submit" class="btn-close btn-close-white" style="font-size:10px" onclick="return confirm('Удалить категорию?')"></button></span>
+        </form>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<div class="collapse mb-3" id="addForm">
+    <div class="card card-body">
+        <form method="post" action="/{{ type }}/add">
+            <div class="mb-2">
+                <select name="category_id" class="form-select form-select-sm">
+                    <option value="">— Без категории —</option>
+                    {% for c in categories %}
+                    {% if c.id is not none %}
+                    <option value="{{ c.id }}">{{ c.name }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-2"><input type="text" name="name" class="form-control" placeholder="Название" required></div>
+            <div class="mb-2"><textarea name="description" class="form-control" placeholder="Описание" rows="2"></textarea></div>
+            <div class="mb-2"><input type="text" name="contacts" class="form-control" placeholder="Контакты"></div>
+            <div class="mb-2"><input type="text" name="photo" class="form-control" placeholder="Фото (URL или photo123_456)"></div>
+            {% if type == 'masters' %}
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" name="recommended" value="1" id="recNew">
+                <label class="form-check-label" for="recNew">Рекомендуемый мастер</label>
+            </div>
+            {% endif %}
+            <button type="submit" class="btn btn-success btn-sm">Сохранить</button>
+        </form>
+    </div>
+</div>
+
+<table class="table table-striped table-sm">
+    <thead><tr><th>ID</th><th>Категория</th><th>Название</th><th>Контакты</th><th>Фото</th><th>Статус</th><th>Рейтинг</th>{% if type == 'masters' %}<th>Просмотры</th>{% endif %}<th>Действия</th></tr></thead>
+    <tbody>
+    {% for item in items %}
+    <tr>
+        <td>{{ item.id }}</td>
+        <td>{{ item.category[:20] }}</td>
+        <td>{{ item.name[:35] }}{% if item.name|length > 35 %}…{% endif %}</td>
+        <td>{{ item.contacts[:30] }}{% if item.contacts|length > 30 %}…{% endif %}</td>
+        <td>{% if item.photo %}✅{% endif %}</td>
+        <td>
+            {% if type == 'masters' and item.verified %}<span class="badge bg-success">✓</span>{% endif %}
+            {% if type == 'masters' and item.recommended %}<span class="badge bg-primary">★</span>{% endif %}
+        </td>
+        <td>{{ item.rating }} ({{ item.votes_count }})</td>
+        {% if type == 'masters' %}
+        <td>{{ item.views_count }}</td>
+        {% endif %}
+        <td>
+            <button class="btn btn-warning btn-sm py-0" data-bs-toggle="collapse" data-bs-target="#editItem{{ item.id }}">✏️</button>
+            {% if type == 'masters' %}
+            <a href="/masters/stats/{{ item.id }}" class="btn btn-outline-info btn-sm py-0">📊</a>
+            <form method="post" action="/masters/recommend/{{ item.id }}" style="display:inline">
+                <button class="btn btn-sm py-0 {% if item.recommended %}btn-primary{% else %}btn-outline-primary{% endif %}">★</button>
+            </form>
+            <form method="post" action="/masters/verify/{{ item.id }}" style="display:inline">
+                <button class="btn btn-sm py-0 {% if item.verified %}btn-secondary{% else %}btn-outline-success{% endif %}">
+                    {% if item.verified %}✂️{% else %}✅{% endif %}
+                </button>
+            </form>
+            {% endif %}
+            <form method="post" action="/{{ type }}/delete/{{ item.id }}" style="display:inline" onsubmit="return confirm('Удалить?')">
+                <button class="btn btn-danger btn-sm py-0">🗑</button>
+            </form>
+            <div class="collapse mt-2" id="editItem{{ item.id }}">
+                <div class="card card-body p-2">
+                    <form method="post" action="/{{ type }}/edit/{{ item.id }}">
+                        <select name="category_id" class="form-select form-select-sm mb-1">
+                            <option value="">— Без категории —</option>
+                            {% for c in categories %}
+                            {% if c.id is not none %}
+                            <option value="{{ c.id }}" {% if c.name == item.category %}selected{% endif %}>{{ c.name }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        <input type="text" name="name" class="form-control mb-1" value="{{ item.name }}">
+                        <textarea name="description" class="form-control mb-1" rows="2">{{ item.description }}</textarea>
+                        <input type="text" name="contacts" class="form-control mb-1" value="{{ item.contacts }}">
+                        <input type="text" name="photo" class="form-control mb-1" value="{{ item.photo }}">
+                        {% if type == 'masters' %}
+                        <div class="form-check mb-1">
+                            <input class="form-check-input" type="checkbox" name="recommended" value="1" id="rec{{ item.id }}" {% if item.recommended %}checked{% endif %}>
+                            <label class="form-check-label" for="rec{{ item.id }}">Рекомендуемый мастер</label>
+                        </div>
+                        {% endif %}
+                        <button type="submit" class="btn btn-success btn-sm">Сохранить</button>
+                    </form>
+                </div>
+            </div>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>📊 Статистика мастеров</h3>
+<div class="card mt-3">
+    <div class="card-body">
+        <h5 class="card-title">📋 Все мастера</h5>
+        <table class="table table-striped">
+            <thead><tr><th>Мастер</th><th>Просмотры</th><th>Рейтинг</th><th>Голосов</th></tr></thead>
+            <tbody>
+            {% for s in stats %}
+            <tr>
+                <td><a href="/masters/stats/{{ s.id }}">{{ s.name }}</a></td>
+                <td>{{ s.views_count }}</td>
+                <td>{{ s.rating }}</td>
+                <td>{{ s.votes_count }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="text-muted">Нет данных</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

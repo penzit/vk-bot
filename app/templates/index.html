@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>📊 Дашборд</h3>
+<div class="row mt-3">
+    <div class="col-md-3">
+        <div class="card text-bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">📚 FAQ</h5>
+                <p class="display-6">{{ faq_count }}</p>
+                <a href="/faq" class="text-white">Управлять →</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">🛍 Мастера</h5>
+                <p class="display-6">{{ master_count }}</p>
+                <a href="/masters" class="text-white">Управлять →</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-warning mb-3">
+            <div class="card-body">
+                <h5 class="card-title">🏪 Магазины</h5>
+                <p class="display-6">{{ shop_count }}</p>
+                <a href="/shops" class="text-white">Управлять →</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-danger mb-3">
+            <div class="card-body">
+                <h5 class="card-title">📩 Заявки</h5>
+                <p class="display-6">{{ ads_count }}</p>
+                <a href="/ads" class="text-white">Смотреть →</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mt-2">
+    <div class="col-md-3">
+        <div class="card text-bg-secondary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">⭐ Оценок всего</h5>
+                <p class="display-6">{{ ratings_count }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-info mb-3">
+            <div class="card-body">
+                <h5 class="card-title">🤖 Бот</h5>
+                {% if bot_running %}
+                    <p class="text-success fw-bold">✅ Запущен</p>
+                {% else %}
+                    <p class="text-danger fw-bold">⏸ Остановлен</p>
+                {% endif %}
+                <a href="/settings" class="text-white">Управлять →</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

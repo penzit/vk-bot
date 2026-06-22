@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>📊 {{ m.name }}</h3>
+<div class="row mt-3">
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">👁 Просмотры контактов</h5>
+                <canvas id="viewsChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">⭐ Рейтинг</h5>
+                <canvas id="ratingChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <table class="table">
+            <tr><td>Просмотры</td><td>{{ m.views_count }}</td></tr>
+            <tr><td>Рейтинг</td><td>{{ m.rating }}</td></tr>
+            <tr><td>Голосов</td><td>{{ m.votes_count }}</td></tr>
+            <tr><td>Категория</td><td>{{ m.category or '—' }}</td></tr>
+            <tr><td>Описание</td><td>{{ m.description }}</td></tr>
+            <tr><td>Контакты</td><td>{{ m.contacts }}</td></tr>
+        </table>
+        <a href="/masters" class="btn btn-outline-secondary btn-sm">← Назад к мастерам</a>
+        <a href="/stats" class="btn btn-outline-secondary btn-sm">← Общая статистика</a>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const masterName = {{ m.name | tojson }};
+const views = {{ m.views_count }};
+const rating = {{ m.rating }};
+
+new Chart(document.getElementById('viewsChart'), {
+    type: 'bar',
+    data: {
+        labels: [masterName],
+        datasets: [{
+            label: 'Просмотры',
+            data: [views],
+            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } }
+    }
+});
+
+new Chart(document.getElementById('ratingChart'), {
+    type: 'doughnut',
+    data: {
+        labels: [masterName, 'Остальные'],
+        datasets: [{
+            data: [rating, 5 - rating],
+            backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(200, 200, 200, 0.3)']
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } }
+    }
+});
+</script>
+{% endblock %}

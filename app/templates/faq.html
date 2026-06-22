@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>📚 FAQ — Справочник</h3>
+
+<button class="btn btn-primary btn-sm mb-3" data-bs-toggle="collapse" data-bs-target="#addForm">➕ Добавить запись</button>
+<div class="collapse mb-3" id="addForm">
+    <div class="card card-body">
+        <form method="post" action="/faq/add">
+            <div class="mb-2">
+                <select name="category_id" class="form-select" required>
+                    <option value="">— Категория —</option>
+                    {% for c in categories %}
+                    <option value="{{ c.id }}">{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-2">
+                <input type="text" name="question" class="form-control" placeholder="Вопрос" required>
+            </div>
+            <div class="mb-2">
+                <textarea name="answer" class="form-control" placeholder="Ответ" rows="3" required></textarea>
+            </div>
+            <div class="mb-2">
+                <input type="text" name="keywords" class="form-control" placeholder="Ключевые слова (через пробел)">
+            </div>
+            <button type="submit" class="btn btn-success btn-sm">Сохранить</button>
+        </form>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead><tr><th>ID</th><th>Категория</th><th>Вопрос</th><th>Ответ</th><th>Ключевые слова</th><th>Действия</th></tr></thead>
+    <tbody>
+    {% for f in faqs %}
+    <tr>
+        <td>{{ f.id }}</td>
+        <td>{{ f.category }}</td>
+        <td>{{ f.question[:50] }}{% if f.question|length > 50 %}…{% endif %}</td>
+        <td>{{ f.answer[:80] }}{% if f.answer|length > 80 %}…{% endif %}</td>
+        <td>{{ f.keywords[:30] }}</td>
+        <td>
+            <button class="btn btn-warning btn-sm" data-bs-toggle="collapse" data-bs-target="#editFaq{{ f.id }}">✏️</button>
+            <form method="post" action="/faq/delete/{{ f.id }}" style="display:inline" onsubmit="return confirm('Удалить?')">
+                <button class="btn btn-danger btn-sm">🗑</button>
+            </form>
+            <div class="collapse mt-2" id="editFaq{{ f.id }}">
+                <div class="card card-body p-2">
+                    <form method="post" action="/faq/edit/{{ f.id }}">
+                        <select name="category_id" class="form-select mb-1">
+                            {% for c in categories %}
+                            <option value="{{ c.id }}" {% if c.name == f.category %}selected{% endif %}>{{ c.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" name="question" class="form-control mb-1" value="{{ f.question }}">
+                        <textarea name="answer" class="form-control mb-1" rows="2">{{ f.answer }}</textarea>
+                        <input type="text" name="keywords" class="form-control mb-1" value="{{ f.keywords }}">
+                        <button type="submit" class="btn btn-success btn-sm">Сохранить</button>
+                    </form>
+                </div>
+            </div>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

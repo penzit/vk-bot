@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>📋 Заявки на верификацию магазинов</h3>
+<table class="table table-striped">
+    <thead><tr><th>ID</th><th>Магазин</th><th>Пользователь</th><th>Телефон</th><th>Документы</th><th>Статус</th><th>Дата</th><th>Действия</th></tr></thead>
+    <tbody>
+    {% for r in reqs %}
+    <tr>
+        <td>{{ r.id }}</td>
+        <td><a href="/shops">#{{ r.shop_id }} {{ r.shop_name[:30] }}</a></td>
+        <td><a href="https://vk.com/id{{ r.user_id }}" target="_blank">{{ r.user_id }}</a></td>
+        <td>{{ r.phone }}</td>
+        <td>{{ r.documents_info[:60] }}</td>
+        <td>
+            {% if r.status == 'pending' %}
+            <span class="badge bg-warning text-dark">Ожидает</span>
+            {% elif r.status == 'approved' %}
+            <span class="badge bg-success">Подтверждён</span>
+            {% else %}
+            <span class="badge bg-secondary">Отклонён</span>
+            {% endif %}
+        </td>
+        <td>{{ r.created_at[:16] }}</td>
+        <td>
+            {% if r.status == 'pending' %}
+            <form method="post" action="/shop_verification/approve/{{ r.shop_id }}" style="display:inline">
+                <button class="btn btn-success btn-sm">✅</button>
+            </form>
+            <form method="post" action="/shop_verification/reject/{{ r.shop_id }}" style="display:inline">
+                <button class="btn btn-danger btn-sm">❌</button>
+            </form>
+            {% endif %}
+        </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="8" class="text-muted">Пока нет заявок</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
