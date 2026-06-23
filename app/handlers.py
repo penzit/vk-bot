@@ -2,7 +2,7 @@ import json
 import logging
 import random
 
-from .config import ADMIN_VK_ID
+from .config import ADMIN_VK_ID, VK_MINI_APP_ID
 from .keyboards import (
     main_menu, faq_categories_kb, faq_questions_kb, back_to_questions,
     category_list_kb, items_list_kb, item_card_kb,
@@ -328,7 +328,7 @@ def handle_message_new(vk, event):
     # ─── First interaction → welcome ───
     _send(vk, peer_id,
         "Здравствуйте! Что хотите узнать?",
-        keyboard=main_menu())
+        keyboard=main_menu(VK_MINI_APP_ID))
 
 
 def handle_callback(vk, event):

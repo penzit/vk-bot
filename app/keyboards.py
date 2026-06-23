@@ -5,9 +5,13 @@ def _btn(label, payload, color="primary"):
     return {"action": {"type": "callback", "label": label, "payload": json.dumps(payload, ensure_ascii=False)}, "color": color}
 
 
-def main_menu():
+def _open_app_btn(label, app_id, hash="", color="primary"):
+    return {"action": {"type": "open_app", "label": label, "app_id": app_id, "hash": hash}, "color": color}
+
+
+def main_menu(app_id):
     return {"inline": False, "buttons": [
-        [_btn("Начать", {"cmd": "start_bot"})],
+        [_open_app_btn("Открыть", app_id, "", "primary")],
     ]}
 
 
